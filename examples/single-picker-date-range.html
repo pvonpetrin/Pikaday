@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+    <title>Pikaday - Single Picker Date Range example</title>
+    <meta name="author" content="Pete von Petrin">
+    <link rel="stylesheet" href="../css/pikaday.css">
+    <link rel="stylesheet" href="../css/site.css">
+</head>
+<body>
+    <h1>Pikaday - Single Picker Date Range example</h1>
+
+    <p class="large">A refreshing JavaScript Datepicker — lightweight, no dependencies, modular CSS.</p>
+
+    <p><a href="https://github.com/dbushell/Pikaday"><strong>Pikaday source on GitHub</strong></a></p>
+
+    <div style="display: inline-block">
+        <label for="picker">Start:</label>
+        <br>
+       <input type="text" id="picker">
+    </div>
+
+    <div style="display: inline-block">
+        <label for="displayOnly">End:</label>
+        <br>
+         <input type="text" id="displayOnly">
+    </div>
+
+    <h2>What is this?</h2>
+
+    <p>Since version 1.0 Pikaday is a stable and battle tested date-picker. Feel free to use it however you like but please report any bugs or feature requests to the <a href="https://github.com/dbushell/Pikaday/issues">GitHub issue tracker</a>, thanks!</p>
+
+    <p class="small">Copyright &copy; 2014 <a href="http://dbushell.com/">David Bushell</a> | BSD &amp; MIT license</p>
+
+
+    <script src="../pikaday.js"></script>
+    <script>
+    var this_ = this,
+        startDate,
+        endDate,
+        displayOnly = document.getElementById('displayOnly'),
+        updateStartDate = function() {
+            picker.setStartRange(startDate);
+            picker.setMinDate(startDate);
+            if (startDate) { document.getElementById('picker').value = startDate.toISOString().slice(0, 10); }
+        },
+        updateEndDate = function() {
+            picker.setEndRange(endDate);
+            picker.setMaxDate(endDate);
+            if (endDate) { displayOnly.value = endDate.toISOString().slice(0, 10); }
+        },
+        picker = new Pikaday({
+            field: document.getElementById('picker'),
+            minDate: new Date(),
+            maxDate: new Date(2020, 12, 31),
+            numberOfMonths: 2,
+            onSelect: function() {
+                selectedDate = this.getDate();
+                compareDate = this_.startDate;
+                if (compareDate && selectedDate >= compareDate) {
+                    this_.endDate = selectedDate;
+                    picker.hide();
+                } else {
+                    this_.startDate = selectedDate;
+                }
+                updateStartDate();
+                updateEndDate();
+            },
+            singlePickerDateRange: true
+        }),
+        _startDate = picker.setStartRange(),
+        _endDate = picker.setEndRange();
+
+        if (_startDate) {
+            startDate = _startDate;
+            updateStartDate();
+        }
+
+        if (_endDate) {
+            endDate = _endDate;
+            updateEndDate();
+        }
+
+        
+        // Manage the end date input box behaviors
+        displayOnly.onfocus = (function(event) {
+             picker.show();
+             event.stopPropagation();
+         });
+ 
+         displayOnly.onblur = (function(event) {
+             event.stopPropagation();
+         });
+ 
+         displayOnly.onclick = (function(event) {
+             event.stopPropagation();
+         });
+
+    </script>
+</body>
+</html>

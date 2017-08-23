@@ -287,7 +287,10 @@
         onDraw: null,
 
         // Enable keyboard input
-        keyboardInput: true
+        keyboardInput: true,
+
+        // Allow the use of a single picker for date range
+        singlePickerDateRange: false
     },
 
 
@@ -466,7 +469,7 @@
             if (!hasClass(target, 'is-disabled')) {
                 if (hasClass(target, 'pika-button') && !hasClass(target, 'is-empty') && !hasClass(target.parentNode, 'is-disabled')) {
                     self.setDate(new Date(target.getAttribute('data-pika-year'), target.getAttribute('data-pika-month'), target.getAttribute('data-pika-day')));
-                    if (opts.bound) {
+                    if (opts.bound && !opts.singlePickerDateRange) {
                         sto(function() {
                             self.hide();
                             if (opts.blurFieldOnSelect && opts.field) {
@@ -585,7 +588,7 @@
             }
             while ((pEl = pEl.parentNode));
 
-            if (!self._c) {
+            if (!self._c && !opts.singlePickerDateRange) {
                 self._b = sto(function() {
                     self.hide();
                 }, 50);
@@ -734,6 +737,7 @@
                 }
             }
 
+
             return opts;
         },
 
@@ -786,6 +790,8 @@
          */
         setDate: function(date, preventOnSelect)
         {
+            var opts = this._o;
+
             if (!date) {
                 this._d = null;
 
@@ -816,7 +822,7 @@
             setToStartOfDay(this._d);
             this.gotoDate(this._d);
 
-            if (this._o.field) {
+            if (this._o.field && !opts.singlePickerDateRange) {
                 this._o.field.value = this.toString();
                 fireEvent(this._o.field, 'change', { firedBy: this });
             }
@@ -970,10 +976,19 @@
             this._o.startRange = value;
         },
 
+        getStartRange: function() {
+            return this._o.startRange;
+        },
+
         setEndRange: function(value)
         {
             this._o.endRange = value;
         },
+
+        getEndRange: function() {
+            return this._o.endRange;
+        },
+
 
         /**
          * refresh the HTML
