@@ -290,7 +290,10 @@
         keyboardInput: true,
 
         // Allow the use of a single picker for date range
-        singlePickerDateRange: false
+        singlePickerDateRange: false,
+
+        // Automatically give input focus when picker launches
+        autoFocus: true,
     },
 
 
@@ -1028,7 +1031,7 @@
             this.el.innerHTML = html;
 
             if (opts.bound) {
-                if(opts.field.type !== 'hidden') {
+                if(opts.field.type !== 'hidden' && opts.autoFocus) {
                     sto(function() {
                         opts.trigger.focus();
                     }, 1);

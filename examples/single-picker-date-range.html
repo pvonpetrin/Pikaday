@@ -18,13 +18,13 @@
     <div style="display: inline-block">
         <label for="picker">Start:</label>
         <br>
-       <input type="text" id="picker">
+       <input type="text" id="pickerStart">
     </div>
 
     <div style="display: inline-block">
-        <label for="displayOnly">End:</label>
+        <label for="pickerEnd">End:</label>
         <br>
-         <input type="text" id="displayOnly">
+         <input type="text" id="pickerEnd">
     </div>
 
     <h2>What is this?</h2>
@@ -36,43 +36,53 @@
 
     <script src="../pikaday.js"></script>
     <script>
-    var this_ = this,
-        startDate,
+    var startDate,
         endDate,
-        displayOnly = document.getElementById('displayOnly'),
+        lastSelectedInput,
+        pickerStart = document.getElementById('pickerStart'),
+        pickerEnd = document.getElementById('pickerEnd'),
         updateStartDate = function() {
             picker.setStartRange(startDate);
             picker.setMinDate(startDate);
-            if (startDate) { document.getElementById('picker').value = startDate.toISOString().slice(0, 10); }
+            if (startDate) { pickerStart.value = startDate.toISOString().slice(0, 10); }
         },
         updateEndDate = function() {
             picker.setEndRange(endDate);
             picker.setMaxDate(endDate);
-            if (endDate) { displayOnly.value = endDate.toISOString().slice(0, 10); }
+            if (endDate) { pickerEnd.value = endDate.toISOString().slice(0, 10); }
         },
         picker = new Pikaday({
-            field: document.getElementById('picker'),
+            field: pickerStart,
+            autoFocus: false,
             minDate: new Date(),
             maxDate: new Date(2020, 12, 31),
+            singlePickerDateRange: true,
             numberOfMonths: 2,
             onSelect: function() {
-                selectedDate = this.getDate();
-                compareDate = this_.startDate;
-                if (compareDate && selectedDate >= compareDate) {
-                    this_.endDate = selectedDate;
-                    picker.hide();
+                var selectedDate = this.getDate();
+                var endOnly = (!startDate && !endDate && lastSelectedInput == 'end');
+                var dateIsLater = (startDate && selectedDate >= startDate);
+                if (dateIsLater || endOnly) {
+                    endDate = selectedDate;
+                    updateEndDate(selectedDate);
+                    if (startDate) { picker.hide(); }
                 } else {
-                    this_.startDate = selectedDate;
+                    startDate = selectedDate;
+                    updateStartDate(selectedDate);
+                    if (endDate) { picker.hide(); }
                 }
+
                 updateStartDate();
                 updateEndDate();
             },
-            singlePickerDateRange: true
+            onShow: function() {
+                pickerStart.value = startDate;
+            }
         }),
         _startDate = picker.setStartRange(),
         _endDate = picker.setEndRange();
 
-        if (_startDate) {
+        if (_startDate) {;
             startDate = _startDate;
             updateStartDate();
         }
@@ -83,20 +93,24 @@
         }
 
         
-        // Manage the end date input box behaviors
-        displayOnly.onfocus = (function(event) {
-             picker.show();
-             event.stopPropagation();
-         });
- 
-         displayOnly.onblur = (function(event) {
-             event.stopPropagation();
-         });
- 
-         displayOnly.onclick = (function(event) {
-             event.stopPropagation();
-         });
+        pickerStart.onfocus = (function(event) {
+            lastSelectedInput = 'start';
+        })
 
+        pickerEnd.onfocus = (function(event) {
+            console.log('ps');
+            lastSelectedInput = 'end'
+            picker.show();
+        });
+
+        pickerEnd.onblur = (function(event) {
+            event.stopPropagation();
+        });
+
+        pickerEnd.onclick = (function(event) {
+            event.stopPropagation();
+        });
+    
     </script>
 </body>
 </html>
